@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f4e5f">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Chess Enthusiasts</title>
+<style>
+:root{--bg:#e8ecef;--sf:#fff;--tx:#14202a;--mu:#62707b;--ac:#1f4e5f;--me:#1f4e5f;--met:#fff;--bd:#d3dae0;--sq:#d9e0e5}
+@media(prefers-color-scheme:dark){:root{--bg:#12171b;--sf:#1b2227;--tx:#e6ebee;--mu:#8d9aa4;--ac:#6fb3c8;--me:#2a6579;--bd:#2a343b;--sq:#222b31}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-top:env(safe-area-inset-top,0)}
+#app{height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+#chat{display:flex;flex-direction:column;height:100%;min-height:0}
+header{padding:10px 14px 12px;background:var(--sf);border-bottom:1px solid var(--bd);
+ background-image:conic-gradient(var(--sq) 25%,transparent 0 50%,var(--sq) 0 75%,transparent 0);background-size:16px 16px;background-position:right top;background-repeat:no-repeat;background-clip:padding-box}
+header{background-image:linear-gradient(90deg,var(--sf) 40%,transparent),conic-gradient(var(--sq) 25%,var(--sf) 0 50%,var(--sq) 0 75%,var(--sf) 0);background-size:100% 100%,16px 16px}
+header h1{font-size:18px;margin:0;letter-spacing:.2px}header small{color:var(--mu);font-size:12.5px}
+#list{flex:1;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:82%;display:flex;gap:6px;align-items:flex-end}.m.me{align-self:flex-end;flex-direction:row-reverse}
+.av{width:28px;height:28px;border-radius:6px;color:#fff;font-size:13px;font-weight:600;display:grid;place-items:center;flex:none}
+.b{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:7px 11px;min-width:0;overflow-wrap:anywhere}
+.me .b{background:var(--me);color:var(--met);border-color:var(--me)}
+.n{font-size:12px;font-weight:600;color:var(--ac)}.t{font-size:11px;opacity:.65;margin-top:2px}
+.b img,.b video{max-width:100%;max-height:300px;border-radius:8px;display:block;margin:3px 0}
+.x{cursor:pointer;margin-left:6px}
+form{display:flex;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0));background:var(--sf);border-top:1px solid var(--bd);align-items:center}
+form input[type=text]{flex:1;min-width:0;padding:10px 14px;border-radius:20px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+button{font:inherit;border:0;border-radius:20px;background:var(--ac);color:#fff;padding:10px 16px;cursor:pointer}
+@media(prefers-color-scheme:dark){button{color:#0c1418}}
+button.ic{background:transparent;color:var(--mu);font-size:22px;padding:4px 8px}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+#join{margin:auto;width:min(340px,90%);display:flex;flex-direction:column;gap:10px;text-align:center}
+#join input{padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font:inherit}
+#join .k{font-size:44px}#msg{color:#c0392b;min-height:1.2em;font-size:14px}.hide{display:none!important}
+</style></head><body><div id="app">
+<div id="join" class="hide"><div class="k">♞</div><h2 style="margin:0">Chess Enthusiasts</h2>
+<input id="nm" placeholder="Your display name" maxlength="20"><input id="pw" type="password" placeholder="Room passcode">
+<button id="go">Join chat</button><div id="msg"></div></div>
+<div id="chat" class="hide">
+<header><h1>♞ Chess Enthusiasts</h1><small id="who"></small></header>
+<div id="list"></div>
+<form id="f"><button type="button" class="ic" id="at" title="Photo or video">📎</button>
+<input type="file" id="fi" accept="image/*,video/*" class="hide">
+<input type="text" id="tx" placeholder="Message" autocomplete="off"><button>Send</button></form></div>
+<div id="load" style="margin:auto;color:var(--mu)">Loading…</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* ===== PASTE YOUR SUPABASE VALUES HERE (Project Settings -> API) ===== */
+const SUPABASE_URL="https://xnkonidpytapjgrkxdvl.supabase.co/rest/v1/", SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhua29uaWRweXRhcGpncmt4ZHZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NzczNDIsImV4cCI6MjEwNzU1MzM0Mn0._c1rlAUxjC3LNEue8o8k2qSZRGmhu_xeCW-Nqr6VUpU";
+/* ===================================================================== */
+const $=id=>document.getElementById(id);
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let uid,me,members=[],seen=new Set(),started=false;
+const col=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return`hsl(${h} 40% 38%)`};
+const show=v=>{$('load').classList.add('hide');$('join').classList.toggle('hide',v!=='join');$('chat').classList.toggle('hide',v!=='chat')};
+async function refreshMembers(){
+  const {data,error}=await sb.from('members').select('*').order('created_at');if(error)throw error;
+  members=data;me=members.find(m=>m.id===uid);
+  $('who').textContent=members.length+'/5 members: '+members.map(m=>m.name).join(', ')}
+async function boot(){
+  try{let {data:{session}}=await sb.auth.getSession();
+    if(!session){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error;session=r.data.session}
+    uid=session.user.id;await refreshMembers();me?startChat():show('join')}
+  catch(e){$('load').textContent='Error: '+(e.message||e)}}
+$('go').onclick=async()=>{
+  const name=$('nm').value.trim(),pw=$('pw').value,m=$('msg');m.textContent='';
+  if(!name||!pw){m.textContent='Enter a name and the passcode.';return}
+  const {data,error}=await sb.rpc('join_chat',{p_pass:pw,p_name:name});
+  if(error){m.textContent='Could not join: '+error.message;return}
+  if(data==='wrong'){m.textContent='Wrong passcode.';return}
+  if(data==='full'){m.textContent='Chat is full (5/5).';return}
+  if(data!=='ok'){m.textContent='Could not join ('+data+').';return}
+  await refreshMembers();startChat()};
+function add(m){
+  if(seen.has(m.id))return;seen.add(m.id);
+  const L=$('list'),near=L.scrollHeight-L.scrollTop-L.clientHeight<150,mine=m.user_id===uid;
+  const w=document.createElement('div');w.className='m'+(mine?' me':'');w.dataset.id=m.id;
+  const a=document.createElement('div');a.className='av';a.style.background=col(m.user_id);a.textContent=(m.name||'?')[0].toUpperCase();
+  const b=document.createElement('div');b.className='b';
+  if(!mine){const n=document.createElement('div');n.className='n';n.textContent=m.name;b.append(n)}
+  if(m.media_url){const v=m.media_type==='video',el=document.createElement(v?'video':'img');el.src=m.media_url;
+    if(v){el.controls=true;el.preload='metadata'}else el.loading='lazy';b.append(el)}
+  if(m.body){const p=document.createElement('div');p.textContent=m.body;b.append(p)}
+  const t=document.createElement('div');t.className='t';
+  t.textContent=new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  if(mine){const x=document.createElement('span');x.className='x';x.textContent='🗑';
+    x.onclick=async()=>{if(!confirm('Delete this message?'))return;
+      const {error}=await sb.from('messages').delete().eq('id',m.id);if(!error){w.remove();seen.delete(m.id)}};t.append(x)}
+  b.append(t);w.append(a,b);L.append(w);
+  if(near||mine)L.scrollTop=L.scrollHeight}
+async function sync(){
+  const {data}=await sb.from('messages').select('*').order('created_at',{ascending:false}).limit(150);
+  (data||[]).reverse().forEach(add)}
+async function startChat(){
+  if(started)return;started=true;show('chat');await sync();
+  sb.channel('room')
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'messages'},p=>add(p.new))
+   .on('postgres_changes',{event:'DELETE',schema:'public',table:'messages'},p=>{
+      const e=document.querySelector('[data-id="'+p.old.id+'"]');if(e)e.remove();seen.delete(p.old.id)})
+   .on('postgres_changes',{event:'*',schema:'public',table:'members'},()=>refreshMembers())
+   .subscribe();
+  setInterval(sync,10000);  // safety net in case live updates drop
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()})}
+async function send(extra={}){
+  const body=$('tx').value.trim();if(!body&&!extra.media_url)return;$('tx').value='';
+  const {data,error}=await sb.from('messages').insert({name:me.name,body:body||null,...extra}).select().single();
+  if(error){alert('Send failed: '+error.message);$('tx').value=body;return}
+  add(data)}
+$('f').onsubmit=e=>{e.preventDefault();send()};
+$('at').onclick=()=>$('fi').click();
+$('fi').onchange=async()=>{
+  const f=$('fi').files[0];$('fi').value='';if(!f)return;
+  if(f.size>25*1048576){alert('Files must be under 25 MB.');return}
+  $('at').textContent='⏳';
+  try{const vid=f.type.startsWith('video'),blob=vid?f:await shrink(f);
+    const ext=vid?(f.name.split('.').pop()||'mp4'):(blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+    const path=uid+'/'+Date.now()+'.'+ext;
+    const {error}=await sb.storage.from('media').upload(path,blob,{contentType:blob.type||f.type});if(error)throw error;
+    await send({media_url:sb.storage.from('media').getPublicUrl(path).data.publicUrl,media_type:vid?'video':'image'})}
+  catch(e){alert('Upload failed: '+(e.message||e))}
+  $('at').textContent='📎'};
+async function shrink(f){
+  if(f.type==='image/gif')return f;
+  const bm=await createImageBitmap(f),s=Math.min(1,1280/Math.max(bm.width,bm.height)),c=document.createElement('canvas');
+  c.width=Math.round(bm.width*s);c.height=Math.round(bm.height*s);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+  return new Promise(r=>c.toBlob(b=>r(b||f),'image/jpeg',.8))}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+boot();
+</script></body></html>
