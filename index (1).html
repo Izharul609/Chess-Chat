@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f4e5f">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png">
+<title>Chess Enthusiasts</title>
+<style>
+:root{--bg:#e8ecef;--sf:#fff;--tx:#14202a;--mu:#62707b;--ac:#1f4e5f;--me:#1f4e5f;--met:#fff;--bd:#d3dae0;--sq:#d9e0e5}
+@media(prefers-color-scheme:dark){:root{--bg:#12171b;--sf:#1b2227;--tx:#e6ebee;--mu:#8d9aa4;--ac:#6fb3c8;--me:#2a6579;--bd:#2a343b;--sq:#222b31}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-top:env(safe-area-inset-top,0)}
+#app{height:100%;display:flex;flex-direction:column;max-width:640px;margin:0 auto}
+#chat{display:flex;flex-direction:column;height:100%;min-height:0}
+header{padding:10px 14px 12px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;
+ background:linear-gradient(90deg,var(--sf) 40%,transparent),conic-gradient(var(--sq) 25%,var(--sf) 0 50%,var(--sq) 0 75%,var(--sf) 0);background-size:100% 100%,16px 16px}
+header div{flex:1;min-width:0}header h1{font-size:18px;margin:0}header small{color:var(--mu);font-size:12.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#list{flex:1;min-height:0;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:6px}
+.m{max-width:84%;display:flex;gap:6px;align-items:flex-end}.m.me{align-self:flex-end;flex-direction:row-reverse}
+.av{width:28px;height:28px;border-radius:6px;color:#fff;font-size:18px;display:grid;place-items:center;flex:none}
+.b{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:7px 11px;min-width:0;overflow-wrap:anywhere;cursor:pointer}
+.me .b{background:var(--me);color:var(--met);border-color:var(--me)}
+.n{font-size:12px;font-weight:600;color:var(--ac)}.t{font-size:11px;opacity:.65;margin-top:2px}
+.q{font-size:12.5px;opacity:.8;border-left:3px solid var(--ac);padding:1px 7px;margin-bottom:4px;background:#8883;border-radius:3px}
+.b img,.b video{max-width:100%;max-height:300px;border-radius:8px;display:block;margin:3px 0}
+.rx{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.ch{font-size:13px;padding:1px 7px;border-radius:10px;background:#8833;border:1px solid transparent}
+.ch.on{border-color:var(--ac)}
+.act{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;padding-top:6px;border-top:1px solid #8884;font-size:15px}.act span{cursor:pointer}
+.bd{display:grid;grid-template-columns:repeat(8,1fr);width:224px;max-width:100%;margin:4px 0;border-radius:4px;overflow:hidden}
+.bd div{aspect-ratio:1;display:grid;place-items:center;font-size:22px;line-height:1;color:#111}
+.lt{background:#eeeed2}.dk{background:#769656}.bd .w{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000}
+#ty{font-size:12px;color:var(--mu);padding:0 14px;min-height:16px}
+#rb{display:flex;justify-content:space-between;gap:8px;padding:6px 12px;font-size:13px;background:var(--sf);border-top:1px solid var(--bd);color:var(--mu)}
+#rb b{cursor:pointer}
+form{display:flex;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0));background:var(--sf);border-top:1px solid var(--bd);align-items:center}
+form input[type=text]{flex:1;min-width:0;padding:10px 14px;border-radius:20px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+button{font:inherit;border:0;border-radius:20px;background:var(--ac);color:#fff;padding:10px 16px;cursor:pointer}
+@media(prefers-color-scheme:dark){button{color:#0c1418}}
+button.ic{background:transparent;color:var(--mu);font-size:22px;padding:4px 8px}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+#vwb{position:fixed;inset:0;background:#000e;display:flex;align-items:center;justify-content:center;z-index:9}#vw{max-width:100%;max-height:100%}
+#join{margin:auto;width:min(340px,90%);display:flex;flex-direction:column;gap:10px;text-align:center}
+#join input{padding:12px;border-radius:10px;border:1px solid var(--bd);background:var(--sf);color:var(--tx);font:inherit}
+#join .k{font-size:44px}#msg{color:#c0392b;min-height:1.2em;font-size:14px}.hide{display:none!important}
+</style></head><body><div id="app">
+<div id="join" class="hide"><div class="k">♞</div><h2 style="margin:0">Chess Enthusiasts</h2>
+<input id="nm" placeholder="Your display name" maxlength="20"><input id="pw" type="password" placeholder="Room passcode">
+<button id="go">Join chat</button><div id="msg"></div></div>
+<div id="chat" class="hide">
+<header><div><h1>♞ Chess Enthusiasts</h1><small id="who"></small></div><button class="ic" id="bell" title="Notifications">🔔</button></header>
+<div id="list"></div><div id="ty"></div>
+<div id="rb" class="hide"><span id="rt"></span><b id="rc">✕</b></div>
+<form id="f"><button type="button" class="ic" id="at" title="Photo or video">📎</button>
+<input type="file" id="fi" accept="image/*,video/*" class="hide">
+<input type="text" id="tx" placeholder="Message  (fen: <position> shows a board)" autocomplete="off"><button>Send</button></form></div>
+<div id="vwb" class="hide"><img id="vw" alt=""></div>
+<div id="load" style="margin:auto;color:var(--mu)">Loading…</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+/* ===== PASTE YOUR SUPABASE VALUES HERE (Project Settings -> API) ===== */
+const SUPABASE_URL="https://xnkonidpytapjgrkxdvl.supabase.co", SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhua29uaWRweXRhcGpncmt4ZHZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE5NzczNDIsImV4cCI6MjEwNzU1MzM0Mn0._c1rlAUxjC3LNEue8o8k2qSZRGmhu_xeCW-Nqr6VUpU";
+/* ===================================================================== */
+const $=id=>document.getElementById(id);
+const sb=supabase.createClient(new URL(SUPABASE_URL.trim()).origin,SUPABASE_KEY.trim());
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+let uid,me,members=[],started=false,ready=false,ch,reply=null,editing=null,unread=0,online=0,lt=0,tt;
+const msgs=new Map(),nodes=new Map();let reacts=[];
+const PC=['♔','♕','♖','♗','♘','♙'],EM=['👍','♟️','😂','❤️','😮'];
+const hs=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
+const col=s=>`hsl(${hs(s)} 40% 38%)`;
+const show=v=>{$('load').classList.add('hide');$('join').classList.toggle('hide',v!=='join');$('chat').classList.toggle('hide',v!=='chat')};
+const head=()=>{$('who').textContent=members.length+' members, '+online+' online: '+members.map(m=>m.name).join(', ')};
+async function refreshMembers(){
+  const {data,error}=await sb.from('members').select('*').order('created_at');if(error)throw error;
+  members=data;me=members.find(m=>m.id===uid);head()}
+async function boot(){
+  try{let {data:{session}}=await sb.auth.getSession();
+    if(!session){const r=await sb.auth.signInAnonymously();if(r.error)throw r.error;session=r.data.session}
+    uid=session.user.id;await refreshMembers();me?startChat():show('join')}
+  catch(e){$('load').textContent='Error: '+(e.message||e)}}
+$('go').onclick=async()=>{
+  const name=$('nm').value.trim(),pw=$('pw').value,m=$('msg');m.textContent='';
+  if(!name||!pw){m.textContent='Enter a name and the passcode.';return}
+  const {data,error}=await sb.rpc('join_chat',{p_pass:pw,p_name:name});
+  if(error){m.textContent='Could not join: '+error.message;return}
+  if(data==='wrong'){m.textContent='Wrong passcode.';return}
+  if(data==='full'){m.textContent='Chat is full.';return}
+  if(data!=='ok'){m.textContent='Could not join ('+data+').';return}
+  await refreshMembers();startChat()};
+/* chess board from FEN */
+const PS={K:'♚',Q:'♛',R:'♜',B:'♝',N:'♞',P:'♟',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+function board(fen){const rows=fen.trim().split(' ')[0].split('/');if(rows.length!==8)return null;
+  const g=el('div','bd');let ok=true;
+  const sq=(r,c,ch)=>{const d=el('div',(r+c)%2?'dk':'lt',ch?PS[ch]+'\uFE0E':'');if(ch&&ch===ch.toUpperCase())d.classList.add('w');g.append(d)};
+  rows.forEach((row,i)=>{let c=0;for(const ch of row){if(/[1-8]/.test(ch)){for(let k=0;k<+ch;k++)sq(i,c++,'')}else if(PS[ch])sq(i,c++,ch);else ok=false}if(c!==8)ok=false});
+  return ok?g:null}
+function bar(){const on=reply||editing;$('rb').classList.toggle('hide',!on);
+  if(on)$('rt').textContent=editing?'Editing message':'Replying to '+reply.name+': '+(reply.body||'media').slice(0,40)}
+$('rc').onclick=()=>{reply=null;if(editing)$('tx').value='';editing=null;bar()};
+function rm(id){const n=nodes.get(id);if(n)n.remove();nodes.delete(id);msgs.delete(id);reacts=reacts.filter(r=>r.message_id!==id)}
+async function react(id,e){
+  const i=reacts.findIndex(r=>r.message_id===id&&r.user_id===uid&&r.emoji===e);
+  if(i>=0){reacts.splice(i,1);draw(msgs.get(id));await sb.from('reactions').delete().match({message_id:id,user_id:uid,emoji:e})}
+  else{reacts.push({message_id:id,user_id:uid,emoji:e});draw(msgs.get(id));await sb.from('reactions').insert({message_id:id,emoji:e})}}
+function draw(m){
+  if(!m)return;msgs.set(m.id,m);const mine=m.user_id===uid;
+  const w=el('div','m'+(mine?' me':''));w.dataset.id=m.id;
+  const a=el('div','av',PC[hs(m.user_id)%6]);a.style.background=col(m.user_id);
+  const b=el('div','b');if(!mine)b.append(el('div','n',m.name));
+  const q=m.reply_to&&msgs.get(m.reply_to);if(q)b.append(el('div','q',q.name+': '+(q.body||'📎 media').slice(0,60)));
+  if(m.media_url){const v=m.media_type==='video',e=el(v?'video':'img');e.src=m.media_url;
+    if(v){e.controls=true;e.preload='metadata'}else{e.loading='lazy';e.onclick=()=>{$('vw').src=m.media_url;$('vwb').classList.remove('hide')}}b.append(e)}
+  if(m.body){const f=/^fen:\s*(.+)/i.exec(m.body),bd=f&&board(f[1]);b.append(bd||el('div','',m.body))}
+  const rs=reacts.filter(r=>r.message_id===m.id);
+  if(rs.length){const row=el('div','rx');for(const e of [...new Set(rs.map(r=>r.emoji))]){
+    const n=rs.filter(r=>r.emoji===e),c=el('span','ch'+(n.some(r=>r.user_id===uid)?' on':''),e+' '+n.length);
+    c.onclick=ev=>{ev.stopPropagation();react(m.id,e)};row.append(c)}b.append(row)}
+  b.append(el('div','t',new Date(m.created_at).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})+(m.edited?' · edited':'')));
+  const act=el('div','act hide');
+  EM.forEach(e=>{const s=el('span','',e);s.onclick=ev=>{ev.stopPropagation();react(m.id,e)};act.append(s)});
+  const add=(t,fn)=>{const s=el('span','',t);s.onclick=ev=>{ev.stopPropagation();fn()};act.append(s)};
+  add('↩ Reply',()=>{editing=null;reply=m;bar();$('tx').focus()});
+  if(mine){if(m.body)add('✏️ Edit',()=>{reply=null;editing=m.id;$('tx').value=m.body;bar();$('tx').focus()});
+    add('🗑 Delete',async()=>{if(!confirm('Delete this message?'))return;const {error}=await sb.from('messages').delete().eq('id',m.id);if(!error)rm(m.id)})}
+  b.append(act);b.onclick=e=>{if(!/^(IMG|VIDEO)$/.test(e.target.tagName))act.classList.toggle('hide')};
+  w.append(a,b);const old=nodes.get(m.id);if(old)old.replaceWith(w);else $('list').append(w);nodes.set(m.id,w)}
+function beep(){try{const a=new AudioContext(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=660;g.gain.value=.05;o.start();o.stop(a.currentTime+.12)}catch(e){}}
+function add(m){
+  if(msgs.has(m.id)){if(JSON.stringify(msgs.get(m.id))!==JSON.stringify(m))draw(m);return}
+  const L=$('list'),near=L.scrollHeight-L.scrollTop-L.clientHeight<150,mine=m.user_id===uid;draw(m);
+  if(near||mine||!ready)L.scrollTop=L.scrollHeight;
+  if(ready&&!mine&&document.hidden){unread++;document.title='('+unread+') Chess Enthusiasts';beep();
+    if(window.Notification&&Notification.permission==='granted')new Notification(m.name,{body:m.body||'Sent a photo/video',icon:'icon-192.png'})}}
+async function sync(){
+  const {data}=await sb.from('messages').select('*').order('created_at',{ascending:false}).limit(150);
+  const ids=(data||[]).map(m=>m.id),r=ids.length?(await sb.from('reactions').select('*').in('message_id',ids)).data||[]:[];
+  const key=x=>x.map(a=>a.message_id+a.user_id+a.emoji).sort().join();
+  if(key(r)!==key(reacts)){reacts=r;msgs.forEach(draw)}
+  (data||[]).reverse().forEach(add)}
+async function startChat(){
+  if(started)return;started=true;show('chat');await sync();ready=true;
+  ch=sb.channel('room',{config:{presence:{key:uid},broadcast:{self:false}}});
+  const pc=(event,table,fn)=>ch.on('postgres_changes',{event,schema:'public',table},fn);
+  pc('INSERT','messages',p=>add(p.new));pc('UPDATE','messages',p=>draw(p.new));pc('DELETE','messages',p=>rm(p.old.id));
+  pc('*','members',()=>refreshMembers());
+  pc('INSERT','reactions',p=>{const r=p.new;if(!reacts.some(x=>x.message_id===r.message_id&&x.user_id===r.user_id&&x.emoji===r.emoji)){reacts.push(r);draw(msgs.get(r.message_id))}});
+  pc('DELETE','reactions',p=>{const r=p.old;reacts=reacts.filter(x=>!(x.message_id===r.message_id&&x.user_id===r.user_id&&x.emoji===r.emoji));draw(msgs.get(r.message_id))});
+  ch.on('presence',{event:'sync'},()=>{online=Object.keys(ch.presenceState()).length;head()})
+    .on('broadcast',{event:'typing'},({payload})=>{$('ty').textContent=payload.name+' is typing…';clearTimeout(tt);tt=setTimeout(()=>$('ty').textContent='',3000)})
+    .subscribe(s=>{if(s==='SUBSCRIBED')ch.track({name:me.name})});
+  setInterval(sync,15000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden){unread=0;document.title='Chess Enthusiasts';sync()}})}
+async function send(extra={}){
+  const body=$('tx').value.trim();
+  if(editing){if(!body)return;const id=editing;editing=null;bar();$('tx').value='';
+    const {data,error}=await sb.from('messages').update({body,edited:true}).eq('id',id).select().single();
+    if(error){alert('Edit failed: '+error.message);return}draw(data);return}
+  if(!body&&!extra.media_url)return;$('tx').value='';
+  const row={name:me.name,body:body||null,...extra};if(reply){row.reply_to=reply.id;reply=null;bar()}
+  const {data,error}=await sb.from('messages').insert(row).select().single();
+  if(error){alert('Send failed: '+error.message);$('tx').value=body;return}add(data)}
+$('f').onsubmit=e=>{e.preventDefault();send()};
+$('tx').oninput=()=>{const n=Date.now();if(ch&&n-lt>2000){lt=n;ch.send({type:'broadcast',event:'typing',payload:{name:me.name}})}};
+$('vwb').onclick=()=>$('vwb').classList.add('hide');
+if(window.Notification)$('bell').onclick=()=>Notification.requestPermission().then(p=>alert(p==='granted'?'Notifications on while the app is open.':'Notifications are blocked in your browser settings.'));
+else $('bell').classList.add('hide');
+$('at').onclick=()=>$('fi').click();
+$('fi').onchange=async()=>{
+  const f=$('fi').files[0];$('fi').value='';if(!f)return;
+  if(f.size>25*1048576){alert('Files must be under 25 MB.');return}
+  $('at').textContent='⏳';
+  try{const vid=f.type.startsWith('video'),blob=vid?f:await shrink(f);
+    const ext=vid?(f.name.split('.').pop()||'mp4'):(blob.type.split('/')[1]||'jpg').replace('jpeg','jpg');
+    const path=uid+'/'+Date.now()+'.'+ext;
+    const {error}=await sb.storage.from('media').upload(path,blob,{contentType:blob.type||f.type});if(error)throw error;
+    await send({media_url:sb.storage.from('media').getPublicUrl(path).data.publicUrl,media_type:vid?'video':'image'})}
+  catch(e){alert('Upload failed: '+(e.message||e))}
+  $('at').textContent='📎'};
+async function shrink(f){
+  if(f.type==='image/gif')return f;
+  const bm=await createImageBitmap(f),s=Math.min(1,1280/Math.max(bm.width,bm.height)),c=document.createElement('canvas');
+  c.width=Math.round(bm.width*s);c.height=Math.round(bm.height*s);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);
+  return new Promise(r=>c.toBlob(b=>r(b||f),'image/jpeg',.8))}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+boot();
+</script></body></html>
