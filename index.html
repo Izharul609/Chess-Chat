@@ -65,18 +65,35 @@ body.dg,body.dg *{user-select:none!important}
 #gm{position:fixed;inset:0;background:#000b;z-index:9;display:flex;align-items:center;justify-content:center;padding:10px}
 .gbox{background:var(--sf);border-radius:16px;padding:12px;width:min(460px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:8px}
 #gh{font-weight:700;font-size:16px;text-align:center}#gs2{text-align:center;font-size:14px;min-height:30px;display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap}
-#gb{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));width:100%;aspect-ratio:1/1;flex:none;border-radius:6px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+#gb,#zboard{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));width:100%;aspect-ratio:1/1;flex:none;border-radius:6px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
 .gbox>*{flex:none}.sq{min-width:0;min-height:0;overflow:hidden;display:grid;place-items:center;font-size:min(9.5vw,42px);line-height:1;position:relative;cursor:pointer;color:#111}
 .sq.w{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000,0 0 1px #000}
 .sq.lm{background-image:linear-gradient(#f5d74270,#f5d74270)}.sq.sel{box-shadow:inset 0 0 0 4px #f5d742}.sq.ck{background-image:radial-gradient(#e74c3c,#e74c3c00 72%)}
 .sq.tg::after{content:'';position:absolute;width:30%;height:30%;border-radius:50%;background:#0003}.sq.tg.cp::after{width:88%;height:88%;background:transparent;border:4px solid #0004}
 #gmv{font-size:13px;color:var(--mu);max-height:72px;overflow:auto;line-height:1.5}
+#brd{display:flex;flex-direction:column;height:100%;min-height:0}
+#zlist{flex:1;min-height:0;overflow:auto;padding:10px}.zi{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px;margin-bottom:8px;cursor:pointer}.zs{font-size:13px;color:var(--mu)}
+#zview{flex:1;min-height:0;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:8px}#zview>*{flex:none}
+.zh{display:flex;align-items:center;gap:8px}.zh b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#zboard{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));grid-template-rows:repeat(8,minmax(0,1fr));width:min(100%,520px);margin:0 auto;aspect-ratio:1/1;border-radius:6px;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.sq.bm{box-shadow:inset 0 0 0 3px #3b9cff}
+.nav{display:flex;gap:6px;flex-wrap:wrap;align-items:center}.nav button{padding:8px 12px}.sw{display:flex;gap:6px;align-items:center;margin-left:auto;font-size:14px}
+#zbar{display:flex;align-items:center;gap:8px;font-size:13px}#zbarb{flex:1;height:10px;background:#222;border-radius:5px;overflow:hidden}#zbarf{height:100%;background:#eee;width:50%;transition:width .3s}
+#zlines{font-size:13px;line-height:1.6}.zl{white-space:nowrap;overflow-x:auto}
+#zmoves{font-size:14px;line-height:2;max-height:120px;overflow:auto;padding:6px 8px;background:var(--sf);border:1px solid var(--bd);border-radius:10px}.mv{padding:2px 5px;border-radius:5px;cursor:pointer}.mv.cur{background:var(--me);color:var(--met)}
+.cm{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:7px 10px;margin-bottom:6px;font-size:14px}.cm.at{border-color:var(--ac)}
+.ch2{background:var(--bg);color:var(--ac);border:1px solid var(--bd);padding:1px 8px;font-size:12px;border-radius:10px;margin-right:6px}
+#zform{display:flex;gap:8px}#zform input{flex:1;min-width:0;padding:10px 14px;border-radius:20px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}
+#znp{position:fixed;inset:0;background:#000a;display:flex;align-items:center;justify-content:center;z-index:8;padding:14px}
+#znp .pn{background:var(--sf);border-radius:14px;padding:16px;width:min(460px,100%);display:flex;flex-direction:column;gap:8px}
+#znp input,#znp textarea{padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}#znp textarea{min-height:150px;resize:vertical}
+#zerr{color:#c0392b;font-size:14px;min-height:1.2em}
 </style></head><body><div id="app">
 <div id="join" class="hide"><div class="k">♞</div><h2 style="margin:0">Chess Enthusiasts</h2>
 <input id="nm" placeholder="Your display name" maxlength="20"><input id="pw" type="password" placeholder="Room passcode">
 <button id="go">Join chat</button><div id="msg"></div></div>
 <div id="chat" class="hide">
-<header><div><h1><img class="lg" src="icon-192.png" alt="">Chess Enthusiasts</h1><small id="who"></small></div><button class="ic" id="rtb" title="Ratings">🏆</button><button class="ic" id="bell" title="Notifications">🔔</button></header>
+<header><div><h1><img class="lg" src="icon-192.png" alt="">Chess Enthusiasts</h1><small id="who"></small></div><button class="ic" id="zopen" title="Analysis board" style="font-size:14px;font-weight:700">Board</button><button class="ic" id="rtb" title="Ratings">🏆</button><button class="ic" id="bell" title="Notifications">🔔</button></header>
 <div id="pn" class="hide"><span id="pt"></span><b id="px" title="Unpin">✕</b></div><div id="list"></div><div id="ty"></div>
 <div id="rb" class="hide"><span id="rt"></span><b id="rc">✕</b></div>
 <div id="gp" class="hide"><input id="gq" placeholder="Search GIFs"><div id="gg"></div><small style="color:var(--mu)">Powered by GIPHY</small></div>
@@ -84,6 +101,21 @@ body.dg,body.dg *{user-select:none!important}
 <input type="file" id="fi" accept="image/*,video/*" class="hide"><input type="file" id="avf" accept="image/*" class="hide">
 <input type="text" id="tx" placeholder="Message" autocomplete="off"><button>Send</button></form></div>
 <div id="vwb" class="hide"><img id="vw" alt=""></div>
+<div id="brd" class="hide">
+<header><button class="ic" id="zbk" title="Back to chat">←</button><div><h1>♟ Board</h1><small>Analysis &amp; discussion</small></div><button id="znew">+ New</button></header>
+<div id="zlist"></div>
+<div id="zview" class="hide">
+<div class="zh"><button class="ic" id="zback">‹ Studies</button><b id="zt"></b><button class="ic hide" id="zdel" title="Delete study">🗑</button></div>
+<div id="zbar" class="hide"><div id="zbarb"><div id="zbarf"></div></div><span id="zbart"></span></div>
+<div id="zboard"></div><div id="zmsg"></div>
+<div class="nav"><button id="z0" class="gh">⏮</button><button id="z1" class="gh">◀</button><button id="z2" class="gh">▶</button><button id="z3" class="gh">⏭</button><button id="zflip" class="gh">⇅</button><button id="zmain" class="gh hide">Main line</button><label class="sw"><input type="checkbox" id="zeng"> Engine</label></div>
+<div id="zlines" class="hide"></div><div id="zmoves"></div><div id="zcom"></div>
+<form id="zform"><input id="zinp" placeholder="Comment on this position…" autocomplete="off"><button>Send</button></form>
+</div>
+<div id="znp" class="hide"><div class="pn"><h3 style="margin:0">New study</h3><input id="zti" placeholder="Title (optional)" maxlength="80">
+<textarea id="zpg" placeholder="Paste a PGN or a FEN here. Leave empty to start from the normal starting position."></textarea><div id="zerr"></div>
+<div class="row"><button id="zcr">Create</button><button id="zcn" class="gh">Cancel</button></div></div></div>
+</div>
 <div id="gm" class="hide"><div class="gbox"><div id="gh"></div><div id="gb"></div><div id="gs2"></div><div id="gmv"></div>
 <div class="row"><button id="gfl" class="gh">⇅ Flip</button><button id="grs" class="gh hide">🏳 Resign</button><button id="gcl" class="gh">Close</button></div></div></div>
 <div id="rp" class="hide"><div class="pn"><h3>🏆 Ratings</h3><div id="rl"></div><small>Your usernames (optional)</small>
@@ -149,7 +181,7 @@ function draw(m){
   const q=m.reply_to&&msgs.get(m.reply_to);if(q){const qe=el('div','q',q.name+': '+(q.body||'📎 media').slice(0,60));qe.dataset.to=m.reply_to;b.append(qe)}
   if(m.media_url){const v=m.media_type==='video',e=el(v?'video':'img');e.src=m.media_url;
     if(v){e.controls=true;e.preload='metadata'}else e.loading='lazy';b.append(e)}
-  let txd=null;if(m.body){const gm=GM.exec(m.body);if(gm)b.append(gcard(+gm[1]));else{const f=/^fen:\s*(.+)/i.exec(m.body),bd=f&&board(f[1]);if(bd)b.append(bd);else{txd=el('div','',m.body);b.append(txd)}}}
+  let txd=null;if(m.body){const gm=GM.exec(m.body),sm2=SMR.exec(m.body);if(gm)b.append(gcard(+gm[1]));else if(sm2)b.append(scard(+sm2[1],sm2[2]));else{const f=/^fen:\s*(.+)/i.exec(m.body),bd=f&&board(f[1]);if(bd)b.append(bd);else{txd=el('div','',m.body);b.append(txd)}}}
   const rs=reacts.filter(r=>r.message_id===m.id);
   if(rs.length){const row=el('div','rx');for(const e of [...new Set(rs.map(r=>r.emoji))]){
     const n=rs.filter(r=>r.emoji===e),c=el('span','ch'+(n.some(r=>r.user_id===uid)?' on':''),e+' '+n.length);
@@ -179,7 +211,10 @@ async function startChat(){
   ch=sb.channel('room',{config:{presence:{key:uid},broadcast:{self:false}}});
   const pc=(event,table,fn)=>ch.on('postgres_changes',{event,schema:'public',table},fn);
   pc('INSERT','messages',p=>add(p.new));pc('UPDATE','messages',p=>draw(p.new));pc('DELETE','messages',p=>rm(p.old.id));
-  pc('*','members',()=>refreshMembers());pc('*','games',p=>{const r=p.new;if(r&&r.id){games.set(r.id,r);gRedraw(r.id);if(og===r.id)renderG()}});pc('*','pin',p=>showPin(p.new));pc('*','reads',p=>{if(p.new){reads.set(p.new.user_id,p.new.last_id);updSeen()}});
+  pc('*','members',()=>refreshMembers());
+  pc('INSERT','studies',p=>{studies.set(p.new.id,p.new);if(!$('zlist').classList.contains('hide'))zList()});
+  pc('DELETE','studies',p=>{studies.delete(p.old.id);if(!$('zlist').classList.contains('hide'))zList()});
+  pc('INSERT','study_comments',p=>{if(st&&p.new.study_id===st.id&&!zcom.some(c=>c.id===p.new.id)){zcom.push(p.new);zRenderCom()}});pc('*','games',p=>{const r=p.new;if(r&&r.id){games.set(r.id,r);gRedraw(r.id);if(og===r.id)renderG()}});pc('*','pin',p=>showPin(p.new));pc('*','reads',p=>{if(p.new){reads.set(p.new.user_id,p.new.last_id);updSeen()}});
   pc('INSERT','reactions',p=>{const r=p.new;if(!reacts.some(x=>x.message_id===r.message_id&&x.user_id===r.user_id&&x.emoji===r.emoji)){reacts.push(r);draw(msgs.get(r.message_id))}});
   pc('DELETE','reactions',p=>{const r=p.old;reacts=reacts.filter(x=>!(x.message_id===r.message_id&&x.user_id===r.user_id&&x.emoji===r.emoji));draw(msgs.get(r.message_id))});
   ch.on('presence',{event:'sync'},()=>{online=Object.keys(ch.presenceState()).length;head()})
@@ -368,6 +403,122 @@ $('nc').onclick=async()=>{if(!confirm('Start a chess game? Anyone in the chat ca
   if(error){alert('Could not start a game: '+error.message+'  (Did you run chess.sql in Supabase?)');return}
   games.set(g.id,g);const r=await sb.from('messages').insert({name:me.name,body:'♟ Chess game #'+g.id}).select().single();
   if(!r.error){add(r.data);sb.functions.invoke('push',{body:{message_id:r.data.id}})}openGame(g.id)};
+/* ===== analysis board: shared studies, PGN/FEN setup, discussion, optional Stockfish ===== */
+const SMR=/^📋 Study #(\d+): (.+)$/,SYS=b=>GM.test(b)||SMR.test(b),studies=new Map(),uq=q=>'abcdefgh'.indexOf(q[0])+(8-q[1])*8;
+let st=null,zcom=[],eOn=false,sf=null,sfBusy=false,sfPend=null,sfIgnore=false,sfLines=[],sfFen='';
+function okFen(f){try{const s=fenS(f);return s.b.length===64&&s.b.includes('K')&&s.b.includes('k')&&(s.t==='w'||s.t==='b')}catch(e){return false}}
+function findSan(s,L,t){t=t.replace(/[+#!?]/g,'').replace(/0/g,'O');
+  if(/^O-O(-O)?$/.test(t))return L.find(m=>m.cs&&((t==='O-O')===(m.cs>0)))||null;
+  const x=/^([KQRBN])?([a-h])?([1-8])?x?([a-h][1-8])(?:=?([QRBNqrbn]))?$/.exec(t);if(!x)return null;
+  const pc=x[1]||'P',c=L.filter(m=>s.b[m.f].toUpperCase()===pc&&sqn(m.t)===x[4]&&(!x[2]||sqn(m.f)[0]===x[2])&&(!x[3]||sqn(m.f)[1]===x[3])&&((m.p||'')===(x[5]||'').toLowerCase()));
+  return c[0]||null}
+function parsePGN(txt){txt=(txt||'').trim();const hdr={};
+  if(/^[rnbqkpRNBQKP1-8]+(\/[rnbqkpRNBQKP1-8]+){7}\s+[wb]\b/.test(txt)){const f=txt.split(/\s+/).slice(0,6).join(' ');return okFen(f)?{start:f,line:[],hdr}:{err:'That position (FEN) is not valid.'}}
+  let body=txt.replace(/\[(\w+)\s+"([^"]*)"\]/g,(_,k,v)=>{hdr[k]=v;return' '});
+  body=body.replace(/\{[^}]*\}/g,' ').replace(/;[^\n]*/g,' ');
+  let d=0,o='';for(const ch of body){if(ch==='(')d++;else if(ch===')')d=Math.max(0,d-1);else if(!d)o+=ch}
+  const toks=o.replace(/\$\d+/g,' ').replace(/\d+\.+/g,' ').replace(/(^|\s)(1-0|0-1|1\/2-1\/2|\*)(?=\s|$)/g,' ').split(/\s+/).filter(Boolean);
+  const start=hdr.FEN||SF;if(!okFen(start))return{err:'The FEN in the PGN header is not valid.'};
+  let s=fenS(start);const line=[];
+  for(const t of toks){const L=legal(s),m=findSan(s,L,t);if(!m)return{err:'Could not read move "'+t+'" (after '+line.length+' moves).'};
+    const n=mk(s,m);line.push({u:uci(m),san:sanOf(s,m,L),fen:fenOf(n)});s=n}
+  return{start,line,hdr}}
+
+function scard(id,title){const c=el('div','gc');c.append(el('b','','📋 '+title));const bt=el('button','','Open in Board');bt.onclick=()=>openStudy(id);c.append(bt);return c}
+function showBoard(){$('chat').classList.add('hide');$('brd').classList.remove('hide');zLoad()}
+function hideBoard(){if(sf&&sfBusy){sfIgnore=true;sf.postMessage('stop')}$('brd').classList.add('hide');$('chat').classList.remove('hide')}
+async function zLoad(){const {data}=await sb.from('studies').select('*').order('id',{ascending:false}).limit(100);(data||[]).forEach(r=>studies.set(r.id,r));zList()}
+function zList(){const L=$('zlist');L.textContent='';const rows=[...studies.values()].sort((a,b)=>b.id-a.id);
+  if(!rows.length)L.append(el('div','zs','No studies yet. Tap "+ New" and paste a PGN or FEN to start one.'));
+  for(const r of rows){const d=el('div','zi');d.append(el('b','',r.title),el('div','zs','by '+r.by_name+' · '+new Date(r.created_at).toLocaleDateString()));d.onclick=()=>zOpen(r);L.append(d)}}
+async function openStudy(id){showBoard();let r=studies.get(id);
+  if(!r){const {data}=await sb.from('studies').select('*').eq('id',id).maybeSingle();if(!data){alert('Study not found (it may have been deleted).');return}studies.set(id,data);r=data}zOpen(r)}
+async function zOpen(r){const p=r.pgn?parsePGN(r.pgn):{start:SF,line:[]},ok=!p.err;
+  st={id:r.id,row:r,base:ok?p.start:SF,start:ok?p.start:SF,main:ok?p.line:[],line:ok?p.line.slice():[],i:0,flip:false,sel:-1,off:false};
+  $('zlist').classList.add('hide');$('zview').classList.remove('hide');$('zt').textContent=r.title;$('zdel').classList.toggle('hide',r.by_id!==uid);
+  zcom=[];zRender();const {data}=await sb.from('study_comments').select('*').eq('study_id',r.id).order('id');zcom=data||[];zRenderCom()}
+const zFen=()=>st.i?st.line[st.i-1].fen:st.start,fkey=f=>f.split(' ').slice(0,4).join(' ');
+function zRender(){if(!st)return;const fen=zFen(),s=fenS(fen),L=legal(s),B=$('zboard');B.textContent='';$('zmsg').textContent='';
+  const last=st.i?st.line[st.i-1].u:null,lf=last?uq(last.slice(0,2)):-1,lt=last?uq(last.slice(2,4)):-1;
+  const tg=st.sel>=0?L.filter(m=>m.f===st.sel).map(m=>m.t):[],ks=s.b.indexOf(s.t==='w'?'K':'k'),chk=chkOf(s);
+  for(let n=0;n<64;n++){const i=st.flip?63-n:n,p=s.b[i],d=el('div','sq '+((((i>>3)+(i&7))%2)?'dk':'lt')+(p&&isU(p)?' w':''),p?PS[p]+'\uFE0E':'');
+    if(i===st.sel)d.classList.add('sel');if(i===lf||i===lt)d.classList.add('lm');if(chk&&i===ks)d.classList.add('ck');
+    if(tg.includes(i)){d.classList.add('tg');if(p)d.classList.add('cp')}d.onclick=()=>zclick(i);B.append(d)}
+  zMoves();zRenderCom();zHi();if(eOn)analyze(fen)}
+function zgo(k){if(!st)return;st.i=Math.max(0,Math.min(st.line.length,k));st.sel=-1;zRender()}
+function zclick(i){const s=fenS(zFen()),L=legal(s),p=s.b[i];
+  if(st.sel>=0){const ms=L.filter(m=>m.f===st.sel&&m.t===i);if(ms.length){if(ms.length>1)return zpromo(ms,s,L);return zplay(ms[0],s,L)}}
+  st.sel=p&&isU(p)===(s.t==='w')&&L.some(m=>m.f===i)?i:-1;zRender()}
+function zpromo(ms,s,L){const S=$('zmsg');S.textContent='Promote to: ';for(const m of ms){const b=el('button','gh',{q:'Queen',r:'Rook',b:'Bishop',n:'Knight'}[m.p]);b.onclick=()=>zplay(m,s,L);S.append(b)}}
+function zplay(m,s,L){const u=uci(m),nx=st.line[st.i];st.sel=-1;
+  if(nx&&nx.u===u)st.i++;else{st.line=st.line.slice(0,st.i);st.line.push({u,san:sanOf(s,m,L),fen:fenOf(mk(s,m))});st.i++;st.off=true}zRender()}
+function zNum(k){const s0=fenS(st.start);return{w:((k%2)===0)===(s0.t==='w'),n:s0.fm+Math.floor((k+(s0.t==='b'?1:0))/2)}}
+const zLabel=k=>{const {w,n}=zNum(k);return n+(w?'.':'...')+' '+st.line[k].san};
+function zMoves(){const M=$('zmoves');M.textContent='';
+  if(!st.line.length)M.textContent='No moves yet. Tap pieces to try moves, or create a study from a PGN.';
+  st.line.forEach((x,k)=>{const {w,n}=zNum(k);if(w||k===0)M.append(el('span','',n+(w?'.':'...')+' '));const sp=el('span','mv'+(st.i===k+1?' cur':''),x.san);sp.onclick=()=>zgo(k+1);M.append(sp,' ')});
+  $('zmain').classList.toggle('hide',!st.off)}
+function zgoFen(f){const k=fkey(f);if(fkey(st.start)===k)return zgo(0);const j=st.line.findIndex(x=>fkey(x.fen)===k);
+  if(j>=0)return zgo(j+1);st.start=f;st.line=[];st.i=0;st.off=true;zRender()}
+function zRenderCom(){if(!st)return;const C=$('zcom');C.textContent='';const cur=fkey(zFen());
+  for(const c of zcom){const d=el('div','cm'+(c.fen&&fkey(c.fen)===cur?' at':''));d.append(el('b','',c.name+'  '));
+    if(c.label){const b=el('button','ch2',c.label);b.onclick=()=>c.fen&&zgoFen(c.fen);d.append(b)}d.append(el('div','',c.body));C.append(d)}}
+$('zform').onsubmit=async e=>{e.preventDefault();const body=$('zinp').value.trim();if(!body||!st)return;$('zinp').value='';
+  const label=st.i?zLabel(st.i-1)+(st.off?' (line)':''):'Start position';
+  const {data,error}=await sb.from('study_comments').insert({study_id:st.id,name:me.name,body,fen:zFen(),label}).select().single();
+  if(error){alert('Could not post: '+error.message);$('zinp').value=body;return}if(!zcom.some(c=>c.id===data.id)){zcom.push(data);zRenderCom()}};
+/* engine (Stockfish, runs on your own phone/computer; only loaded when you switch it on) */
+async function loadSF(){if(sf)return sf;let err='';
+  for(const u of ['stockfish.js','https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js','https://cdn.jsdelivr.net/npm/stockfish@10.0.2/src/stockfish.js']){
+    try{const r=await fetch(u);if(!r.ok){err='not found';continue}const t=await r.text();if(t.length<100000||t.trimStart().startsWith('<')){err='bad file';continue}
+      const w=new Worker(URL.createObjectURL(new Blob([t],{type:'text/javascript'})));
+      await new Promise((res,rej)=>{const to=setTimeout(()=>rej(new Error('engine did not start')),25000);w.onmessage=e=>{if(String(e.data).includes('uciok')){clearTimeout(to);res()}};w.onerror=e=>{clearTimeout(to);rej(new Error(e.message||'worker error'))};w.postMessage('uci')});
+      w.onmessage=sfMsg;w.postMessage('setoption name MultiPV value 3');sf=w;return sf}catch(e){err=String((e&&e.message)||e)}}
+  throw new Error(err||'engine not found')}
+function analyze(fen){if(!sf)return;if(sfBusy){sfPend=fen;if(!sfIgnore){sfIgnore=true;sf.postMessage('stop')}}else runSF(fen)}
+function runSF(fen){sfBusy=true;sfIgnore=false;sfFen=fen;sfLines=[];renderEng();sf.postMessage('position fen '+fen);sf.postMessage('go movetime 5000')}
+function sfMsg(e){const t=String(e.data);
+  if(t.startsWith('bestmove')){sfBusy=false;sfIgnore=false;if(sfPend){const f=sfPend;sfPend=null;runSF(f)}else renderEng();return}
+  if(sfIgnore||!t.startsWith('info')||!t.includes(' pv '))return;
+  const mp=+((/multipv (\d+)/.exec(t)||[0,1])[1]),d=+((/depth (\d+)/.exec(t)||[0,0])[1]),sc=/score (cp|mate) (-?\d+)/.exec(t);if(!sc)return;
+  let v=+sc[2];if(sfFen.split(' ')[1]==='b')v=-v;sfLines[mp-1]={d,k:sc[1],v,pv:t.split(' pv ')[1].trim().split(/\s+/)};renderEng()}
+const fmtEv=l=>l.k==='mate'?(l.v>0?'M':'-M')+Math.abs(l.v):(l.v>0?'+':'')+(l.v/100).toFixed(2);
+function pvSan(fen,pv,n){let s=fenS(fen);const o=[];for(const u of pv.slice(0,n)){const L=legal(s),m=L.find(x=>uci(x)===u);if(!m)break;
+  o.push((s.t==='w'?s.fm+'. ':(o.length?'':s.fm+'... '))+sanOf(s,m,L));s=mk(s,m)}return o.join(' ')}
+function renderEng(){const E=$('zlines');if(!E)return;E.textContent='';
+  if(!sfLines[0]){E.textContent=sfBusy?'Thinking…':'No moves to analyse here.';zHi();return}
+  const a=sfLines[0];$('zbart').textContent=fmtEv(a)+'  (depth '+a.d+')';
+  $('zbarf').style.width=(a.k==='mate'?(a.v>0?100:0):50+50*Math.tanh(a.v/400))+'%';
+  sfLines.forEach((l,i)=>{if(l)E.append(el('div','zl',(i+1)+'.  '+fmtEv(l)+'   '+pvSan(sfFen,l.pv,8)))});zHi()}
+function zHi(){if(!st)return;const bm=eOn&&sfLines[0]&&sfFen===zFen()?sfLines[0].pv[0]:null;
+  [...$('zboard').children].forEach((d,n)=>{const i=st.flip?63-n:n;d.classList.toggle('bm',!!bm&&(i===uq(bm.slice(0,2))||i===uq(bm.slice(2,4))))})}
+$('zeng').onchange=async()=>{eOn=$('zeng').checked;$('zbar').classList.toggle('hide',!eOn);$('zlines').classList.toggle('hide',!eOn);
+  if(!eOn){if(sf&&sfBusy){sfIgnore=true;sf.postMessage('stop')}zHi();return}
+  $('zlines').textContent='Loading the engine… (the first time can take a few seconds)';
+  try{await loadSF();analyze(zFen())}
+  catch(e){alert('The engine could not load: '+(e.message||e)+'\nTip: add stockfish.js to your GitHub repo (see the setup notes).');$('zeng').checked=false;eOn=false;$('zbar').classList.add('hide');$('zlines').classList.add('hide')}};
+/* navigation + new study */
+$('zopen').onclick=()=>{showBoard();st=null;$('zview').classList.add('hide');$('zlist').classList.remove('hide')};
+$('zbk').onclick=hideBoard;
+$('zback').onclick=()=>{if(sf&&sfBusy){sfIgnore=true;sf.postMessage('stop')}st=null;$('zview').classList.add('hide');$('zlist').classList.remove('hide');zList()};
+$('z0').onclick=()=>zgo(0);$('z1').onclick=()=>st&&zgo(st.i-1);$('z2').onclick=()=>st&&zgo(st.i+1);$('z3').onclick=()=>st&&zgo(st.line.length);
+$('zflip').onclick=()=>{if(st){st.flip=!st.flip;zRender()}};
+$('zmain').onclick=()=>{if(!st)return;st.start=st.base;st.line=st.main.slice();st.off=false;zgo(Math.min(st.i,st.line.length))};
+$('zdel').onclick=async()=>{if(!st||!confirm('Delete this study and its comments for everyone?'))return;
+  const {error}=await sb.from('studies').delete().eq('id',st.id);if(error){alert(error.message);return}studies.delete(st.id);$('zback').onclick()};
+$('znew').onclick=()=>{$('znp').classList.remove('hide');$('zerr').textContent=''};
+$('zcn').onclick=()=>$('znp').classList.add('hide');
+$('zcr').onclick=async()=>{const txt=$('zpg').value.trim();let title=$('zti').value.trim(),p={start:SF,line:[],hdr:{}};
+  if(txt){p=parsePGN(txt);if(p.err){$('zerr').textContent=p.err;return}}
+  if(!title)title=p.hdr&&p.hdr.White?p.hdr.White+' vs '+(p.hdr.Black||'?'):'Untitled study';
+  $('zcr').disabled=true;const {data,error}=await sb.from('studies').insert({title:title.slice(0,80),pgn:txt,by_name:me.name}).select().single();$('zcr').disabled=false;
+  if(error){$('zerr').textContent='Could not save: '+error.message+' (Did you run studies.sql?)';return}
+  studies.set(data.id,data);$('znp').classList.add('hide');$('zti').value='';$('zpg').value='';
+  const r=await sb.from('messages').insert({name:me.name,body:'📋 Study #'+data.id+': '+data.title}).select().single();
+  if(!r.error){add(r.data);sb.functions.invoke('push',{body:{message_id:r.data.id}})}zOpen(data)};
+addEventListener('keydown',e=>{if(!st||$('brd').classList.contains('hide')||/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.key==='ArrowLeft'){e.preventDefault();zgo(st.i-1)}else if(e.key==='ArrowRight'){e.preventDefault();zgo(st.i+1)}
+  else if(e.key==='ArrowUp'){e.preventDefault();zgo(0)}else if(e.key==='ArrowDown'){e.preventDefault();zgo(st.line.length)}});
 /* gestures: double-tap = react, swipe = reply, long-press / right-click = more, tap a quote = jump to it */
 let g=null,popm=null,lastPop=0,glt=0,gln=null,glo;const LS=$('list');
 const buzz=()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}};
@@ -379,8 +530,8 @@ function openPop(m,row,full){lastPop=Date.now();closePop();const p=el('div','pop
   EM.forEach(e=>{const x=el('span','',e);x.onclick=()=>{closePop();react(m.id,e)};em.append(x)});p.append(em);
   if(full){const A=(t,fn,c)=>{const x=el('div','pi'+(c?' '+c:''),t);x.onclick=()=>{closePop();fn()};p.append(x)};
     A('↩  Reply',()=>startReply(m));
-    if(m.body&&!GM.test(m.body)){A('📋  Copy text',()=>{if(navigator.clipboard)navigator.clipboard.writeText(m.body)});A('📌  Pin to top',()=>setPin(m.body))}
-    if(mine&&m.body&&!GM.test(m.body))A('✏️  Edit',()=>startEdit(m));
+    if(m.body&&!SYS(m.body)){A('📋  Copy text',()=>{if(navigator.clipboard)navigator.clipboard.writeText(m.body)});A('📌  Pin to top',()=>setPin(m.body))}
+    if(mine&&m.body&&!SYS(m.body))A('✏️  Edit',()=>startEdit(m));
     if(mine)A('🗑  Delete',async()=>{if(!confirm('Delete this message?'))return;const {error}=await sb.from('messages').delete().eq('id',m.id);if(!error)rm(m.id)},'dg')}
   document.body.append(p);const r=row.getBoundingClientRect(),h=p.offsetHeight,w=p.offsetWidth;
   let top=r.top-h-6;if(top<8)top=Math.min(r.bottom+6,innerHeight-h-8);
@@ -416,7 +567,7 @@ document.addEventListener('pointerdown',e=>{if(popm&&!popm.contains(e.target)&&D
 addEventListener('keydown',e=>{if(e.key==='Escape')closePop()});
 $('tx').addEventListener('keydown',e=>{
   if(e.key==='Escape'){reply=null;if(editing){editing=null;$('tx').value=''}bar()}
-  if(e.key==='ArrowUp'&&!$('tx').value){const mm=[...msgs.values()].filter(x=>x.user_id===uid&&x.body&&!GM.test(x.body)).sort((a,b)=>b.id-a.id)[0];if(mm){e.preventDefault();startEdit(mm)}}});
+  if(e.key==='ArrowUp'&&!$('tx').value){const mm=[...msgs.values()].filter(x=>x.user_id===uid&&x.body&&!SYS(x.body)).sort((a,b)=>b.id-a.id)[0];if(mm){e.preventDefault();startEdit(mm)}}});
 /* seen receipts (Instagram style: names appear under the last message of yours each person has read) */
 const reads=new Map();let sentRead=0;
 function updSeen(){
