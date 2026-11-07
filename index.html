@@ -26,7 +26,7 @@ header div{flex:1;min-width:0}header h1{font-size:18px;margin:0}header small{col
 .ch.on{border-color:var(--ac)}
 .act{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;padding-top:6px;border-top:1px solid #8884;font-size:15px}.act span{cursor:pointer}
 .bd{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:224px;max-width:100%;margin:4px 0;border-radius:4px;overflow:hidden}
-.bd div{aspect-ratio:1;min-width:0;overflow:hidden;display:grid;place-items:center;font-size:22px;line-height:1;color:#111}
+.bd div{position:relative;aspect-ratio:1;min-width:0;overflow:hidden;display:grid;place-items:center;font-size:22px;line-height:1;color:#111}
 .lt{background:#eeeed2}.dk{background:#769656}.bd .w{color:#fff;text-shadow:0 0 2px #000,0 0 2px #000}
 #ty{font-size:12px;color:var(--mu);padding:0 14px;min-height:16px}
 #rb{display:flex;justify-content:space-between;gap:8px;padding:6px 12px;font-size:13px;background:var(--sf);border-top:1px solid var(--bd);color:var(--mu)}
@@ -88,6 +88,8 @@ body.dg,body.dg *{user-select:none!important}
 #znp .pn{background:var(--sf);border-radius:14px;padding:16px;width:min(460px,100%);display:flex;flex-direction:column;gap:8px}
 #znp input,#znp textarea{padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit}#znp textarea{min-height:150px;resize:vertical}
 #zerr{color:#c0392b;font-size:14px;min-height:1.2em}
+.pc{position:absolute;inset:0;background-size:100% 100%;background-repeat:no-repeat;pointer-events:none}
+#pset{padding:8px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--tx);font:inherit;font-size:13px;max-width:110px}
 </style></head><body><div id="app">
 <div id="join" class="hide"><div class="k">♞</div><h2 style="margin:0">Chess Enthusiasts</h2>
 <input id="nm" placeholder="Your display name" maxlength="20"><input id="pw" type="password" placeholder="Room passcode">
@@ -102,7 +104,7 @@ body.dg,body.dg *{user-select:none!important}
 <input type="text" id="tx" placeholder="Message" autocomplete="off"><button>Send</button></form></div>
 <div id="vwb" class="hide"><img id="vw" alt=""></div>
 <div id="brd" class="hide">
-<header><button class="ic" id="zbk" title="Back to chat">←</button><div><h1>♟ Board</h1><small>Analysis &amp; discussion</small></div><button id="znew">+ New</button></header>
+<header><button class="ic" id="zbk" title="Back to chat">←</button><div><h1>♟ Board</h1><small>Analysis &amp; discussion</small></div><select id="pset" title="Piece style"></select><button id="znew">+ New</button></header>
 <div id="zlist"></div>
 <div id="zview" class="hide">
 <div class="zh"><button class="ic" id="zback">‹ Studies</button><b id="zt"></b><button class="ic hide" id="zdel" title="Delete study">🗑</button></div>
@@ -160,7 +162,7 @@ $('go').onclick=async()=>{
 const PS={K:'♚',Q:'♛',R:'♜',B:'♝',N:'♞',P:'♟',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
 function board(fen){const rows=fen.trim().split(' ')[0].split('/');if(rows.length!==8)return null;
   const g=el('div','bd');let ok=true;
-  const sq=(r,c,ch)=>{const d=el('div',(r+c)%2?'dk':'lt',ch?PS[ch]+'\uFE0E':'');if(ch&&ch===ch.toUpperCase())d.classList.add('w');g.append(d)};
+  const sq=(r,c,ch)=>{const d=el('div',(r+c)%2?'dk':'lt',ch&&!PCS_ON()?PS[ch]+'\uFE0E':'');if(ch&&ch===ch.toUpperCase())d.classList.add('w');paint(d,ch);g.append(d)};
   rows.forEach((row,i)=>{let c=0;for(const ch of row){if(/[1-8]/.test(ch)){for(let k=0;k<+ch;k++)sq(i,c++,'')}else if(PS[ch])sq(i,c++,ch);else ok=false}if(c!==8)ok=false});
   return ok?g:null}
 function bar(){const on=reply||editing;$('rb').classList.toggle('hide',!on);
@@ -368,7 +370,7 @@ function renderG(){const g=games.get(og);if(!g)return;const st=gstate(g),s=st.s,
   const pl=g.white===uid||g.black===uid,myT=act&&(s.t==='w'?g.white:g.black)===uid,last=st.h.length?st.h[st.h.length-1].m:null;
   const ks=s.b.indexOf(s.t==='w'?'K':'k'),chk=chkOf(s),tg=sel>=0&&myT?L.filter(m=>m.f===sel).map(m=>m.t):[],B=$('gb');B.textContent='';
   $('gh').textContent='♔ '+g.white_name+'  vs  ♚ '+(g.black_name||'?');
-  for(let n=0;n<64;n++){const i=flip?63-n:n,p=s.b[i],d=el('div','sq '+((((i>>3)+(i&7))%2)?'dk':'lt')+(p&&isU(p)?' w':''),p?PS[p]+'\uFE0E':'');
+  for(let n=0;n<64;n++){const i=flip?63-n:n,p=s.b[i],d=el('div','sq '+((((i>>3)+(i&7))%2)?'dk':'lt')+(p&&isU(p)?' w':''),p&&!PCS_ON()?PS[p]+'\uFE0E':'');paint(d,p);
     if(i===sel)d.classList.add('sel');if(last&&(i===last.f||i===last.t))d.classList.add('lm');if(chk&&i===ks)d.classList.add('ck');
     if(tg.includes(i)){d.classList.add('tg');if(p)d.classList.add('cp')}
     d.onclick=()=>gclick(i);B.append(d)}
@@ -430,7 +432,8 @@ function hideBoard(){if(sf&&sfBusy){sfIgnore=true;sf.postMessage('stop')}$('brd'
 async function zLoad(){const {data}=await sb.from('studies').select('*').order('id',{ascending:false}).limit(100);(data||[]).forEach(r=>studies.set(r.id,r));zList()}
 function zList(){const L=$('zlist');L.textContent='';const rows=[...studies.values()].sort((a,b)=>b.id-a.id);
   if(!rows.length)L.append(el('div','zs','No studies yet. Tap "+ New" and paste a PGN or FEN to start one.'));
-  for(const r of rows){const d=el('div','zi');d.append(el('b','',r.title),el('div','zs','by '+r.by_name+' · '+new Date(r.created_at).toLocaleDateString()));d.onclick=()=>zOpen(r);L.append(d)}}
+  for(const r of rows){const d=el('div','zi');d.append(el('b','',r.title),el('div','zs','by '+r.by_name+' · '+new Date(r.created_at).toLocaleDateString()));d.onclick=()=>zOpen(r);L.append(d)}
+  L.append(el('div','zs','Piece art: lichess.org piece sets (e.g. cburnett by Colin M. L. Burnett, GPLv2+).'))}
 async function openStudy(id){showBoard();let r=studies.get(id);
   if(!r){const {data}=await sb.from('studies').select('*').eq('id',id).maybeSingle();if(!data){alert('Study not found (it may have been deleted).');return}studies.set(id,data);r=data}zOpen(r)}
 async function zOpen(r){const p=r.pgn?parsePGN(r.pgn):{start:SF,line:[]},ok=!p.err;
@@ -441,7 +444,7 @@ const zFen=()=>st.i?st.line[st.i-1].fen:st.start,fkey=f=>f.split(' ').slice(0,4)
 function zRender(){if(!st)return;const fen=zFen(),s=fenS(fen),L=legal(s),B=$('zboard');B.textContent='';$('zmsg').textContent='';
   const last=st.i?st.line[st.i-1].u:null,lf=last?uq(last.slice(0,2)):-1,lt=last?uq(last.slice(2,4)):-1;
   const tg=st.sel>=0?L.filter(m=>m.f===st.sel).map(m=>m.t):[],ks=s.b.indexOf(s.t==='w'?'K':'k'),chk=chkOf(s);
-  for(let n=0;n<64;n++){const i=st.flip?63-n:n,p=s.b[i],d=el('div','sq '+((((i>>3)+(i&7))%2)?'dk':'lt')+(p&&isU(p)?' w':''),p?PS[p]+'\uFE0E':'');
+  for(let n=0;n<64;n++){const i=st.flip?63-n:n,p=s.b[i],d=el('div','sq '+((((i>>3)+(i&7))%2)?'dk':'lt')+(p&&isU(p)?' w':''),p&&!PCS_ON()?PS[p]+'\uFE0E':'');paint(d,p);
     if(i===st.sel)d.classList.add('sel');if(i===lf||i===lt)d.classList.add('lm');if(chk&&i===ks)d.classList.add('ck');
     if(tg.includes(i)){d.classList.add('tg');if(p)d.classList.add('cp')}d.onclick=()=>zclick(i);B.append(d)}
   zMoves();zRenderCom();zHi();if(eOn)analyze(fen)}
@@ -519,6 +522,24 @@ $('zcr').onclick=async()=>{const txt=$('zpg').value.trim();let title=$('zti').va
 addEventListener('keydown',e=>{if(!st||$('brd').classList.contains('hide')||/INPUT|TEXTAREA/.test(e.target.tagName))return;
   if(e.key==='ArrowLeft'){e.preventDefault();zgo(st.i-1)}else if(e.key==='ArrowRight'){e.preventDefault();zgo(st.i+1)}
   else if(e.key==='ArrowUp'){e.preventDefault();zgo(0)}else if(e.key==='ArrowDown'){e.preventDefault();zgo(st.line.length)}});
+/* piece graphics: Lichess piece sets, downloaded once and cached on this device (symbols are used if it fails) */
+const SETS={cburnett:'Lichess',merida:'Merida',chessnut:'Chessnut',staunty:'Staunty',pixel:'Pixel'};
+let PCS={},pset='cburnett';try{pset=localStorage.getItem('pset')||'cburnett'}catch(e){}
+const PCS_ON=()=>Object.keys(PCS).length===12,pcKey=p=>(isU(p)?'w':'b')+p.toUpperCase();
+function paint(d,p){if(p&&PCS_ON())d.append(el('i','pc p-'+pcKey(p)))}
+function pieceCss(){let t=document.getElementById('pcss');if(!t){t=document.createElement('style');t.id='pcss';document.head.append(t)}
+  t.textContent=Object.entries(PCS).map(([k,u])=>'.p-'+k+'{background-image:url("'+u+'")}').join('')}
+async function loadPieces(set){let c=null;try{c=JSON.parse(localStorage.getItem('pcs:'+set)||'null')}catch(e){}
+  if(!(c&&Object.keys(c).length===12)){const out={},bases=['https://raw.githubusercontent.com/lichess-org/lila/master/public/piece/'+set+'/','https://cdn.jsdelivr.net/gh/lichess-org/lila@master/public/piece/'+set+'/'];
+    await Promise.all([...'wb'].flatMap(x=>[...'KQRBNP'].map(y=>x+y)).map(async k=>{for(const b of bases){try{const r=await fetch(b+k+'.svg');if(!r.ok)continue;const t=await r.text();
+      if(t.includes('<svg')){out[k]='data:image/svg+xml;utf8,'+encodeURIComponent(t);return}}catch(e){}}}));
+    if(Object.keys(out).length!==12)return false;c=out;try{localStorage.setItem('pcs:'+set,JSON.stringify(out))}catch(e){}}
+  PCS=c;pieceCss();return true}
+function rerenderAll(){if(og)renderG();if(st)zRender();for(const m of msgs.values()){const b=m.body||'';if(GM.test(b)||/^fen:/i.test(b))draw(m)}}
+const PSEL=$('pset');for(const[k,v]of Object.entries(SETS)){const o=document.createElement('option');o.value=k;o.textContent=v;PSEL.append(o)}PSEL.value=pset;
+PSEL.onchange=async()=>{pset=PSEL.value;try{localStorage.setItem('pset',pset)}catch(e){}const ok=await loadPieces(pset);
+  if(!ok){PCS={};pieceCss();alert('Could not download that piece set. Using the simple symbols instead.')}rerenderAll()};
+loadPieces(pset).then(ok=>{if(ok)rerenderAll()});
 /* gestures: double-tap = react, swipe = reply, long-press / right-click = more, tap a quote = jump to it */
 let g=null,popm=null,lastPop=0,glt=0,gln=null,glo;const LS=$('list');
 const buzz=()=>{try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}};
